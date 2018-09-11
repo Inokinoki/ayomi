@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome {{username}}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <div class="panel panel-primary" style="margin-top:20px;">
+            <div class="panel-body">
+                <div class="col-sm-12 col-md-6 col-lg-3">Username (Readonly): {{username}}
+                    <a class="btn btn-success" disabled="disabled">Modify</a>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3">Email: <span id="email-span">{{email}}</span>
+                    <a class="btn btn-success" href="javascript:openModifyModal('email')">Modify</a>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3">First name: <span id="first_name-span">{{first_name}}</span>
+                    <a class="btn btn-success" href="javascript:openModifyModal('first_name')">Modify</a>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3">Last name: <span id="last_name-span">{{last_name}}</span>
+                    <a class="btn btn-success" href="javascript:openModifyModal('last_name')">Modify</a>
+                </div>
+            </div>
+        </div>
+        <div id="modals">
+            <!-- Modal -->
+            <div class="modal fade" id="modify-modal" tabindex="-1" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal-title">Modal default title</h4>
+                  </div>
+                  <div class="modal-body">
+                      <label id="modal-text">Default: </label>
+                      <input id="modal-input" type="text" placeholder="" value="">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="send()">Enregistrer</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2>Project Description</h2>
+            </div>
+            <div class="panel-body">
+            <p>Nous aimerions que tu apprennes à utiliser Django et que tu nous fasse un site suivant les instructions suivantes:</p>
+            <ul>
+                <li>On veut une page permettant à un utilisateur de se connecter.</li>
+                <li>Une fois connecté, l'utilisateur accède à la page d’affichage de son profil et des modifications (nom / prénom / email).</li>
+                <li>En cliquant sur "Modifier ses informations", on veut avoir une modale qui s'ouvre.</li>
+                <li>Dans cette modale,  on veut un input permettant de modifier son adresse email, ainsi qu'un bouton "enregistrer". A l'appui de ce bouton, l'adresse email sera modifiée dans la base de données et sur la page principale sans rechargement de la page.</li>
+                <li>Le code python doit être écrit en Orienté Objet.</li>
+                <li>On utilisera Django 1.8, Python 2.7 et Bootstrap 3.</li>
+            </ul>
+            <p>Vous êtes libre d'utiliser d'autres outils ou Frameworks selon vos préférences.</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            <div class="navbar-header">
+                <p class="navbar-text" href="#">Test Ayomi</p>
+            </div>
+            <div class="navbar-right">
+                <p class="navbar-text" href="#">Signed in as {{username}}</p>
+                <a class="btn btn-default navbar-btn" href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script>
+    var titleMapper = {
+        'email': 'Email',
+        'first_name': 'First Name',
+        'last_name': 'Last Name',
+    };
+    var linkMapper = {
+        'email': '/change_email/',
+        'first_name': '/change_first_name/',
+        'last_name': '/change_last_name/',
+    };
+    var current = "email";
+
+    //window.onload = function(){
+    //    $('#modify-modal').modal({show: true});
+    //}
+
+    function send(){
+        if (current){
+            var value = $("#modal-input").val();
+            console.log(value);
+            $.ajax({
+                //TO DO
+                type: "GET",
+                url: linkMapper[current] + "" + value +"/",
+                success: function(data){
+                    console.log(data[current]);
+                    $("#" + current + "-span").text(data[current]);
+                    $("#modal-input").val("");
+                    $("#modify-modal").modal("hide");
+                },
+                failed: function(){
+                    alert("La modification est echoue");
+                }
+            })
+        }
+    }
+
+    function openModifyModal(name){
+        current = name;
+        $("#modal-title").text(titleMapper[name] + "Modification");
+        $("#modal-text").text(titleMapper[name] + " : ");
+        $("#modal-input").attr("placeholder", titleMapper[name]);
+        $("#modify-modal").modal({show: true});
+    }
+</script>
+
+</body>
+</html>
